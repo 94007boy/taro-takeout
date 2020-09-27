@@ -1,0 +1,13 @@
+@import "@styles/theme.scss";
+.cartCtrl{
+  width: 45px;
+  height: 45px;
+  border-radius: 45px;
+  @include flex-col-center();
+  background-color: #E1251B;
+  &__add{
+    font-size: 40px;
+    line-height: 45px;
+    color: #fff;
+  }
+}

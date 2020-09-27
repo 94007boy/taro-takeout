@@ -1,0 +1,37 @@
+.searchBar{
+  top: 0;
+  z-index: 9;
+  width: 100%;
+  position: fixed;
+  display: flex;
+  padding: 0 25px;
+  align-items: center;
+  flex-direction: row;
+  &__leftIcon{
+    width: 30px;
+    height: 30px;
+    background-color: #AAA;
+  }
+  &__rightIcon{
+    width: 30px;
+    height: 30px;
+    background-color: #AAA;
+  }
+  &__input{
+    flex:1;
+    height: 60px;
+    display: flex;
+    padding: 0 25px;
+    margin: 0 25px;
+    border-radius: 60px;
+    align-items: center;
+    flex-direction: row;
+    background-color: #e6e6e6;
+    &-input{
+      height: 100%;
+      line-height: 60px;
+      font-size: 25px;
+      padding-left: 10px;
+    }
+  }
+}

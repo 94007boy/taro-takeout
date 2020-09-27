@@ -1,0 +1,46 @@
+.tabOrder{
+  overflow: hidden;
+  height: 100%;
+  background-color: #fff;
+  &__box{
+    height: 100%;
+    display: flex;
+    padding-bottom: 95px;
+    &-leftList{
+      flex: none;
+      width: 23%;
+      overflow-y: auto;
+    }
+    &-rightList{
+      width: 77%;
+      height: 100%;
+      position: relative;
+      overflow-y: auto;
+      &-inner{
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+  }
+}
+.tabGoods{
+  width: 100%;
+  display: flex;
+  padding-top: 25px;
+  padding-left: 20px;
+  flex-direction: column;
+  &__title{
+    display: flex;
+    font-size: 15px;
+    align-items: center;
+    &-icon{
+      width: 5px;
+      height: 25px;
+      margin-right: 10px;
+      background-color: darkkhaki;
+    }
+    &-txt{
+      line-height: 30px;
+      height: 25px;
+    }
+  }
+}

@@ -1,0 +1,37 @@
+.tabs_border_box{
+  display: flex;
+  align-items: center;
+  height: 70px;
+  background-color: #fff;
+  border-top: 10px solid #eee;
+}
+.tabs_body{
+}
+.tabs_border{
+  position: relative;
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  color: #666;
+  border-bottom: 1PX solid #ddd;
+  line-height: 61px;
+  height: 100%;
+  .tabs_border_tag{
+    position: relative;
+  }
+}
+.tabs_border_active{
+  color: #E1251B;
+  .tabs_border_tag{
+    &::after{
+      content: "";
+      position: absolute;
+      bottom: -15px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: #E1251B;
+    };
+    position: relative;
+  }
+}

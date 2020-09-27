@@ -1,0 +1,39 @@
+@import "@styles/theme.scss";
+
+.goods{
+  display: flex;
+  padding: 20px 0;
+  border-bottom: 1px solid #ececec;
+  &__img{
+    width: 130px;
+    height: 130px;
+    background-color: #E1251B;
+  }
+  &__content{
+    display: flex;
+    flex: 1;
+    margin-left: 20px;
+    flex-direction: column;
+    &-title{width: 300px;height: 30px;background-color: #333}
+    &-subtitle{width: 300px;height: 20px;background-color: #969696;margin: 10px 0;}
+    &-sold{width: 100px;height: 20px;background-color: #646464}
+    &-price{
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      padding-right: 10px;
+      &-new{
+        width: 50px;height: 25px;background-color: #E1251B;
+      }
+      &-old{
+        width: 50px;height: 20px;background-color: #aaaaaa;margin-left: 20px;
+      }
+      &-flex{flex: 1}
+    }
+    &-coupon{
+      display: flex;
+      &-flag{width: 25px;height: 25px;background-color: #f99f06}
+      &-tips{width: 100px;height: 25px;background-color: #f99f06;margin-left: 20px}
+    }
+  }
+}
