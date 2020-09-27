@@ -27,6 +27,14 @@ class Index extends PureComponent {
     this.setState({scrollEable})
   }
 
+  onInnerScrollToTop(){
+    this.props.onInnerScrollToTop()
+  }
+
+  scrollAndSelect(index){
+    this.props.scrollAndSelect(index)
+  }
+
   render(){
     const data=[
       {
@@ -48,7 +56,12 @@ class Index extends PureComponent {
     return(
       <Tabs data={data} handClick={this.handClick.bind(this)}>
         <View style={wrapStyle}>
-          <TabOrder key={1}/>
+          <TabOrder
+            key={1}
+            tabRectBtm={this.props.tabRectBtm}
+            scrollEnabled={this.props.scrollEnabled}
+            scrollAndSelect={this.scrollAndSelect.bind(this)}
+            onInnerScrollToTop={this.onInnerScrollToTop.bind(this)}/>
         </View>
         <View style={wrapStyle}>
           <TabEvaluate key={0}/>

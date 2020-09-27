@@ -1,9 +1,15 @@
-import { PureComponent } from '@tarojs/taro'
-import { View, Icon, Text, Input } from '@tarojs/components'
+import Taro, { PureComponent } from '@tarojs/taro'
+import { View, Icon, Text, Input, ScrollView } from '@tarojs/components'
 import ShopCart from '@components/shop-cart'
 import Category from './category'
 import Goods from './goods'
 import './index.scss'
+let query
+if (process.env.TARO_ENV === 'h5') {
+  query = Taro.createSelectorQuery().in(this)
+} else {
+  query = Taro.createSelectorQuery().in(this.$scope)
+}
 
 class Index extends PureComponent {
 
@@ -36,13 +42,93 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props)
+    this.cateListHeights = []
     this.state={
-      current:0
+      current:0,
+      scrollTop:0,
+      cateScrollTop:0
     }
   }
 
-  onCategoryClick = (e) => {
+  componentDidMount () {
+    setTimeout(() => {
+      query
+        .selectAll('.tabGoods')
+        .boundingClientRect(rects => {
+          rects.map((rect,index) => {
+            this.cateListHeights.push({
+              index,
+              pos:rect.top
+            })
+          })
+          console.log('scrollOffset',this.cateListHeights)
+        })
+        .exec()
+    },100)
+  }
 
+  onCategoryClick = (e) => {
+    if(!this.props.scrollEnabled && e != 0){//内层禁止滑动时就点击了切换类别按钮
+      this.props.scrollAndSelect(e)//外层自动置顶
+      setTimeout(() => {//内层滚动到指定位置
+        this.setState({
+          scrollTop:this.cateListHeights[e].pos - this.props.tabRectBtm,
+          current:e
+        })
+      },100)
+    }else {
+      this.setState({
+        scrollTop:this.cateListHeights[e].pos - this.props.tabRectBtm,
+        current:e
+      })
+    }
+  }
+
+  onScroll(e){
+    this.setState({scrollTop:e.detail.scrollTop})
+    if(e.detail.scrollTop == 0){
+      this.props.onInnerScrollToTop()
+    }
+    if(this.props.tabsFoods.length > 1){
+      this.tabPosCalc(this.cateListHeights,e.detail.scrollTop + this.props.tabRectBtm + 1)
+    }
+  }
+
+  onCateScroll(e){
+    this.setState({cateScrollTop:e.detail.scrollTop})
+  }
+
+  onScrollToLower(){
+    this.setState({current:this.cateListHeights.length - 1})
+  }
+
+  //二分法确定当前选中哪个tab,scrollTop,this.cateListHeights
+  tabPosCalc(cateList,y){
+    if(cateList.length == 1){
+      console.log('cateList',cateList)
+      this.setState({current:cateList[0].index})
+      return;
+    }
+    let prevList = cateList.slice(0,cateList.length/2)
+    let nextList = cateList.slice(cateList.length/2)
+    let prevPos = prevList[prevList.length - 1].pos
+    let nextPos = nextList[0].pos
+    if(y < prevPos){//落入前半段
+      this.tabPosCalc(prevList,y)
+    }else if(y > nextPos){//落入后半段
+      this.tabPosCalc(nextList,y)
+    }else if(y >= prevPos && y < nextPos){//落入中间位置
+      if(prevList[prevList.length - 1].index == this.state.current){
+        return//已经选中了
+      }
+      let currentTemp = prevList[prevList.length - 1].index
+      this.setState({current:currentTemp})
+      if(currentTemp > this.props.categories.length/2){
+        this.setState({cateScrollTop:10000})
+      }else {
+        this.setState({cateScrollTop:0})
+      }
+    }
   }
 
   render() {
@@ -52,7 +138,7 @@ class Index extends PureComponent {
           key={index}
           index={index}
           category={category}
-          onClick={this.onCategoryClick}
+          onCategoryClick={this.onCategoryClick.bind(this)}
           current={this.state.current} />
       )
     })
@@ -78,14 +164,25 @@ class Index extends PureComponent {
     return (
       <View className='tabOrder'>
         <View className='tabOrder__box'>
-          <View className='tabOrder__box-leftList'>
-            {leftListDom}
-          </View>
-          <View className='tabOrder__box-rightList'>
-            <View className='tabOrder__box-rightList-inner'>
+          <ScrollView
+            className='tabOrder__box-leftSv'
+            scrollTop={this.state.cateScrollTop}
+            onScroll={this.onCateScroll.bind(this)}
+            scrollY>
+            <View className='tabOrder__box-leftSv-inner'>
+              {leftListDom}
+            </View>
+          </ScrollView>
+          <ScrollView
+            className='tabOrder__box-rightSv'
+            scrollY={this.props.scrollEnabled}
+            scrollTop={this.state.scrollTop}
+            onScrollToLower={this.onScrollToLower.bind(this)}
+            onScroll={this.onScroll.bind(this)}>
+            <View className='tabOrder__box-rightSv-inner'>
               {rightListDom}
             </View>
-          </View>
+          </ScrollView>
         </View>
         <ShopCart/>
       </View>
