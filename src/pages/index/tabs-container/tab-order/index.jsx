@@ -1,15 +1,9 @@
 import Taro, { PureComponent } from '@tarojs/taro'
 import { View, Icon, Text, Input, ScrollView } from '@tarojs/components'
-import ShopCart from '@components/shop-cart'
+// import ShopCart from '@components/shop-cart'
 import Category from './category'
 import Goods from './goods'
 import './index.scss'
-let query
-if (process.env.TARO_ENV === 'h5') {
-  query = Taro.createSelectorQuery().in(this)
-} else {
-  query = Taro.createSelectorQuery().in(this.$scope)
-}
 
 class Index extends PureComponent {
 
@@ -51,24 +45,44 @@ class Index extends PureComponent {
   }
 
   componentDidMount () {
+    let query = Taro.createSelectorQuery()
+    if (process.env.TARO_ENV === 'h5') {
+      query = query.in(this)
+    }else {
+      query = query.in(this.$scope)
+    }
     setTimeout(() => {
+      console.log('tabRectBtm',this.props.tabRectBtm)
+      let rectsTemp
       query
         .selectAll('.tabGoods')
         .boundingClientRect(rects => {
+          if(rectsTemp)return
+          console.log('cateListHeights',rects)
+          rectsTemp = rects
           rects.map((rect,index) => {
             this.cateListHeights.push({
               index,
               pos:rect.top
             })
           })
-          console.log('scrollOffset',this.cateListHeights)
         })
         .exec()
-    },100)
+      query
+        .select('.shop-cart')
+        .boundingClientRect(rect => {
+          this.props.boundingClientRect({
+            nodeName:'shop-cart',
+            rect
+          })
+        })
+        .exec()
+    },200)
   }
 
   onCategoryClick = (e) => {
-    if(!this.props.scrollEnabled && e != 0){//内层禁止滑动时就点击了切换类别按钮
+    if(!this.props.scrollEnabled && e != 0){//内层禁止滑动时就点击了切换类别按钮，此时需要自动置顶
+      console.log('onCategoryClick',e)
       this.props.scrollAndSelect(e)//外层自动置顶
       setTimeout(() => {//内层滚动到指定位置
         this.setState({
@@ -81,6 +95,11 @@ class Index extends PureComponent {
         scrollTop:this.cateListHeights[e].pos - this.props.tabRectBtm,
         current:e
       })
+      if(e > this.props.categories.length/2){
+        this.setState({cateScrollTop:10000})
+      }else {
+        this.setState({cateScrollTop:0})
+      }
     }
   }
 
@@ -90,6 +109,7 @@ class Index extends PureComponent {
       this.props.onInnerScrollToTop()
     }
     if(this.props.tabsFoods.length > 1){
+      //+1过界
       this.tabPosCalc(this.cateListHeights,e.detail.scrollTop + this.props.tabRectBtm + 1)
     }
   }
@@ -98,14 +118,9 @@ class Index extends PureComponent {
     this.setState({cateScrollTop:e.detail.scrollTop})
   }
 
-  onScrollToLower(){
-    this.setState({current:this.cateListHeights.length - 1})
-  }
-
   //二分法确定当前选中哪个tab,scrollTop,this.cateListHeights
   tabPosCalc(cateList,y){
     if(cateList.length == 1){
-      console.log('cateList',cateList)
       this.setState({current:cateList[0].index})
       return;
     }
@@ -128,6 +143,8 @@ class Index extends PureComponent {
       }else {
         this.setState({cateScrollTop:0})
       }
+    }else if(y >= prevPos){//最后一个位置特殊处理
+      this.setState({current:this.cateListHeights.length - 1})
     }
   }
 
@@ -177,14 +194,17 @@ class Index extends PureComponent {
             className='tabOrder__box-rightSv'
             scrollY={this.props.scrollEnabled}
             scrollTop={this.state.scrollTop}
-            onScrollToLower={this.onScrollToLower.bind(this)}
             onScroll={this.onScroll.bind(this)}>
             <View className='tabOrder__box-rightSv-inner'>
               {rightListDom}
             </View>
           </ScrollView>
         </View>
-        <ShopCart/>
+        <View className='shop-cart'>
+          <View className='shop-cart-icon'></View>
+          <Text className='shop-cart-tips'></Text>
+          <Text className='shop-cart-price'></Text>
+        </View>
       </View>
     )
   }

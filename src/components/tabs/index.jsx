@@ -23,7 +23,37 @@ class Tabs extends PureComponent{
   }
 
   componentDidMount() {
-
+    console.log('tabs',this.props)
+    let tabsRootRect
+    let query = Taro.createSelectorQuery()
+    if (process.env.TARO_ENV === 'h5') {
+      query = query.in(this)
+    }else {
+      query = query.in(this.$scope)
+    }
+    setTimeout(() => {
+      query
+        .select('.tabsRoot')
+        .boundingClientRect(rect => {
+          if(tabsRootRect)return
+          tabsRootRect = rect
+          this.props.boundingClientRect({
+            nodeName:'tabsRoot',
+            rect
+          })
+          console.log('tabsRoot',rect.top)
+        })
+        .exec()
+      query
+        .select('.tabs_border_box')
+        .boundingClientRect(rect => {
+          this.props.boundingClientRect({
+            nodeName:'tabs_border_box',
+            rect
+          })
+        })
+        .exec()
+    },100)
   }
 
   render(){

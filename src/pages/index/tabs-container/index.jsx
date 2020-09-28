@@ -54,13 +54,17 @@ class Index extends PureComponent {
       display:`${0===Number(this.state.current)?'block ':'none'}`}
 
     return(
-      <Tabs data={data} handClick={this.handClick.bind(this)}>
+      <Tabs
+        data={data}
+        handClick={this.handClick.bind(this)}
+        boundingClientRect={this.props.boundingClientRect}>
         <View style={wrapStyle}>
           <TabOrder
             key={1}
             tabRectBtm={this.props.tabRectBtm}
             scrollEnabled={this.props.scrollEnabled}
             scrollAndSelect={this.scrollAndSelect.bind(this)}
+            boundingClientRect={this.props.boundingClientRect}
             onInnerScrollToTop={this.onInnerScrollToTop.bind(this)}/>
         </View>
         <View style={wrapStyle}>

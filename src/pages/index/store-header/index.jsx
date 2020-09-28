@@ -1,4 +1,4 @@
-import {PureComponent} from '@tarojs/taro'
+import Taro, {PureComponent} from '@tarojs/taro'
 import {View, Icon, Text, Input} from '@tarojs/components'
 import './index.scss'
 
@@ -8,6 +8,26 @@ class Index extends PureComponent {
 
   constructor(props) {
     super(props)
+  }
+
+  componentDidMount() {
+    let query = Taro.createSelectorQuery()
+    if (process.env.TARO_ENV === 'h5') {
+      query = query.in(this)
+    }else {
+      query = query.in(this.$scope)
+    }
+    setTimeout(() => {
+      query
+        .select('.storeHeader')
+        .boundingClientRect(rect => {
+          this.props.boundingClientRect({
+            nodeName:'storeHeader',
+            rect
+          })
+        })
+        .exec()
+    },100)
   }
 
   render() {
